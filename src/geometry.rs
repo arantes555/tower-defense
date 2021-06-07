@@ -131,3 +131,120 @@ pub fn distance_segments_squared(s1: &Segment, s2: &Segment) -> f64 {
 
     return min;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use super::super::utils;
+
+    #[test]
+    fn test_distance_points_squared() {
+        let d = distance_points_squared(
+            &Point { x: 0.0, y: 1.0 },
+            &Point { x: 1.0, y: 0.0 },
+        );
+        assert!(utils::are_values_equal(d, 2.0)); // supposed to be 2 (sqrt(2) squared)
+    }
+    
+    #[test]
+    fn test_distance_point_segment_squared() {
+        let s = Segment {
+            a: Point { x: 0.0, y: 1.0 },
+            b: Point { x: 1.0, y: 0.0 },
+        };
+
+        let d = distance_point_segment_squared(&Point { x: 0.0, y: 0.0 }, &s);
+        assert!(utils::are_values_equal(d, 0.5)); // supposed to be 0.5 (sqrt(2)/2 squared)
+
+        let d = distance_point_segment_squared(&Point { x: 0.0, y: 1.0 }, &s);
+        assert!(utils::are_values_equal(d, 0.0)); // supposed to be 0
+
+        let d = distance_point_segment_squared(&Point { x: -1.0, y: 2.0 }, &s);
+        assert!(utils::are_values_equal(d, 2.0)); // supposed to be 2
+
+        let d = distance_point_segment_squared(&Point { x: 1.0, y: 1.0 }, &s);
+        assert!(utils::are_values_equal(d, 0.5)); // supposed to be 0.5
+
+        let d = distance_point_segment_squared(&Point { x: 2.0, y: 0.0 }, &s);
+        assert!(utils::are_values_equal(d, 1.0)); // supposed to be 1
+    }
+    
+    #[test]
+    fn test_segments_intersect() {
+        let intersect = segments_intersect(
+            &Segment {
+                a: Point { x: 0.0, y: 0.0 },
+                b: Point { x: 1.0, y: 1.0 },
+            },
+            &Segment {
+                a: Point { x: 1.0, y: 0.0 },
+                b: Point { x: 0.0, y: 1.0 },
+            },
+        );
+        assert_eq!(intersect, true);
+
+        let intersect = segments_intersect(
+            &Segment {
+                a: Point { x: 0.0, y: 0.0 },
+                b: Point { x: 0.0, y: 1.0 },
+            },
+            &Segment {
+                a: Point { x: 0.0, y: 0.0 },
+                b: Point { x: 1.0, y: 0.0 },
+            },
+        );
+        assert_eq!(intersect, true);
+
+        let intersect = segments_intersect(
+            &Segment {
+                a: Point { x: 0.0, y: 0.0 },
+                b: Point { x: 0.0, y: 1.0 },
+            },
+            &Segment {
+                a: Point { x: 0.1, y: 0.0 },
+                b: Point { x: 1.0, y: 0.0 },
+            },
+        );
+        assert_eq!(intersect, false);
+    }
+
+    #[test]
+    fn test_distance_segments_squared() {
+        let d = distance_segments_squared(
+            &Segment {
+                a: Point { x: 0.0, y: 0.0 },
+                b: Point { x: 1.0, y: 1.0 },
+            },
+            &Segment {
+                a: Point { x: 1.0, y: 0.0 },
+                b: Point { x: 0.0, y: 1.0 },
+            },
+        );
+        assert!(utils::are_values_equal(d, 0.0)); // supposed to be 0
+
+
+        let d = distance_segments_squared(
+            &Segment {
+                a: Point { x: 0.0, y: 0.0 },
+                b: Point { x: 0.0, y: 1.0 },
+            },
+            &Segment {
+                a: Point { x: 0.1, y: 0.0 },
+                b: Point { x: 1.0, y: 0.0 },
+            },
+        );
+        assert!(utils::are_values_equal(d, 0.01)); // supposed to be 0.01 (0.1 squared)
+
+        let d = distance_segments_squared(
+            &Segment {
+                a: Point { x: 0.0, y: 0.0 },
+                b: Point { x: 0.0, y: 1.0 },
+            },
+            &Segment {
+                a: Point { x: 1.0, y: 0.0 },
+                b: Point { x: 1.0, y: 1.0 },
+            },
+        );
+        assert!(utils::are_values_equal(d, 1.0)); // supposed to be 1
+    }
+}
